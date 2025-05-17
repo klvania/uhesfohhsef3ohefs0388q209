@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Discordチャット表示</title>
+<style>
+  #chat {
+    border: 1px solid #ccc; height: 400px; overflow-y: scroll; padding: 10px; font-family: Arial, sans-serif;
+  }
+  .msg { margin-bottom: 8px; }
+  .author { font-weight: bold; color: #0055cc; }
+</style>
+</head>
+<body>
+
+<h1>Discordチャットリアルタイム表示</h1>
+<div id="chat"></div>
+
+<script>
+  const chat = document.getElementById('chat');
+  const ws = new WebSocket('ws://localhost:8080');
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    const div = document.createElement('div');
+    div.className = 'msg';
+    div.innerHTML = `<span class="author">${data.author}</span>: ${data.content}`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  };
+
+  ws.onopen = () => console.log('WebSocket接続成功');
+  ws.onerror = e => console.error('WebSocketエラー', e);
+  ws.onclose = () => console.log('WebSocket切断');
+</script>
+
+</body>
+</html>
